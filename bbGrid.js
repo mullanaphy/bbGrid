@@ -3,7 +3,35 @@
  *
  */
 
-var bbGrid = {};
+var bbGrid = {
+};
+
+/**
+ * Send either a key, value or an object with key => value pairing to change
+ * default wording names on the fly.
+ * 
+ * @param {mixed} key
+ * @param {string} value
+ * @returns {bbGrid}
+ */
+bbGrid.prototype.wording = {
+    loading: 'Загрузка',
+    noResults: 'Нет записей',
+    search: 'Поиск',
+    pages: 'из'
+};
+bbGrid.prototype.setWording = function(key, value) {
+    if (typeof key === 'object') {
+        for (var i in key) {
+            if (key.hasOwnProperty(i)) {
+                this.setWording(i, key[i]);
+            }
+        }
+    } else {
+        this.wording[key] = value;
+    }
+    return this;
+};
 
 /* Main Container - top bar, table($grid), nav bar
  * Models of Collections must have [id] !
@@ -92,7 +120,7 @@ _.extend(bbGrid.View.prototype, Backbone.View.prototype, {
             this.navBar = new bbGrid.NavView({view: this});
             this.$navBar = this.navBar.render();
             this.$grid.after(this.$navBar);
-            this.$loading = $('<div class="bbGrid-loading progress progress-info progress-striped active"><div class="bar bbGrid-loading-progress">Загрузка...</div></div>');
+            this.$loading = $('<div class="bbGrid-loading progress progress-info progress-striped active"><div class="bar bbGrid-loading-progress">'+bbGrid.wording.loading+'...</div></div>');
             this.$navBar.prepend(this.$loading);
         }
         if(!this.$searchBar && this.enableSearch){
@@ -168,7 +196,7 @@ _.extend(bbGrid.View.prototype, Backbone.View.prototype, {
         });
         if(collection.length == 0 && !this.autofetch){
             var colspan = (this.multiselect || this.subgrid) ? this.colModel.length+1 : this.colModel.length;
-            this.$grid.append('<tbody><tr class="bbGrid-noRows"><td colspan="'+colspan+'">Нет записей</td></tr></tbody>');
+            this.$grid.append('<tbody><tr class="bbGrid-noRows"><td colspan="'+colspan+'">'+bbGrid.wording.noResults+'</td></tr></tbody>');
         }
     },
     setRowSelected: function(options){
@@ -481,7 +509,7 @@ _.extend(bbGrid.PagerView.prototype, Backbone.View.prototype, {
                 <li>\
                     <div class="bbGrid-page-counter pull-left">Стр.</div>\
                     <input class="bbGrid-page-input" value="<%=page%>" type="text">\
-                    <div class="bbGrid-page-counter pull-right"> из <%=cntpages%> </div>\
+                    <div class="bbGrid-page-counter pull-right"> '+bbGrid.wording.pages+' <%=cntpages%> </div>\
                 </li>\
                 <li<%if(page == cntpages){%> class="active"<%}%>>\
                     <a class="right"><i class="icon-forward"/></a>\
@@ -643,7 +671,7 @@ _.extend(bbGrid.SearchView.prototype, Backbone.View.prototype, {
     render: function(){
         var searchBar = _.template(
             '<div class="input-append">\
-                <input name="search" class="span2" type="text" placeholder="Поиск">\
+                <input name="search" class="span2" type="text" placeholder="'+bbGrid.wording.search+'">\
                 <div class="btn-group dropup">\
                     <button class="btn dropdown-toggle" data-toggle="dropdown">\
                     <span name="column"><%=cols[0].title%></span>\
