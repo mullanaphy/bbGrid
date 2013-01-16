@@ -6,6 +6,13 @@
 var bbGrid = {
 };
 
+
+bbGrid.prototype.wording = {
+    loading: 'Загрузка',
+    noResults: 'Нет записей',
+    search: 'Поиск',
+    pages: 'из'
+};
 /**
  * Send either a key, value or an object with key => value pairing to change
  * default wording names on the fly.
@@ -14,12 +21,6 @@ var bbGrid = {
  * @param {string} value
  * @returns {bbGrid}
  */
-bbGrid.prototype.wording = {
-    loading: 'Загрузка',
-    noResults: 'Нет записей',
-    search: 'Поиск',
-    pages: 'из'
-};
 bbGrid.prototype.setWording = function(key, value) {
     if (typeof key === 'object') {
         for (var i in key) {
